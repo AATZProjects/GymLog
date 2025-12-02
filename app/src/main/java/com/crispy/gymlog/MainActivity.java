@@ -25,6 +25,8 @@ import com.crispy.gymlog.database.entities.GymLog;
 import com.crispy.gymlog.database.entities.User;
 import com.crispy.gymlog.databinding.ActivityMainBinding;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     static final String SHARED_PREFERENCE_USERID_KEY = "com.crispy.gymlog.SHARED_PREFERENCE_USERID_KEY";
     static final String SHARED_PREFERENCE_USERID_VALUE = "com.crispy.gymlog.SHARED_PREFERENCE_USERID_VALUE";
     private static final int LOGGED_OUT = -1;
+    private static final String SAVED_INSTANCE_STATE_USERID_KEY = "com.crispy.gymlog.SAVED_INSTANCE_STATE_USERID_KEY";
     private ActivityMainBinding binding;
     private GymLogRepository repository;
 
@@ -54,16 +57,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // ^^^ Boilerplate ^^^
 
-        loginUser();
+        repository = GymLogRepository.getRepository(getApplication());
+        loginUser(savedInstanceState);
+
         if (loggedInUserId == -1) {
             Intent intent = LoginActivity.loginIntentFactory(getApplicationContext());
             startActivity(intent);
         }
 
-        repository = GymLogRepository.getRepository(getApplication());
 
         // Allows user to scroll the log on top
         binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
+        updateDisplay();
 
         // Log the values that are input in the text fields
         binding.logButton.setOnClickListener(new View.OnClickListener() {
@@ -86,31 +91,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void loginUser() {
+    private void loginUser(Bundle savedInstanceState) {
         // Check shared preference for logged in user
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCE_USERID_KEY,
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_USERID_KEY,
                 Context.MODE_PRIVATE);
 
-        loggedInUserId = sharedPreferences.getInt(SHARED_PREFERENCE_USERID_VALUE, LOGGED_OUT);
-
-        if (loggedInUserId != LOGGED_OUT) {
-            return;
+        if (sharedPreferences.contains(SHARED_PREFERENCE_USERID_VALUE)) {
+            loggedInUserId = sharedPreferences.getInt(SHARED_PREFERENCE_USERID_VALUE, LOGGED_OUT);
         }
 
-        // Check intent for logged in user
-        loggedInUserId = getIntent().getIntExtra(MAIN_ACTIVITY_USER_ID, LOGGED_OUT);
+        // TODO: Here, you used && and the professor used &, this may be a bug on the professor's part
+        if (loggedInUserId == LOGGED_OUT && savedInstanceState != null && savedInstanceState.containsKey(SAVED_INSTANCE_STATE_USERID_KEY)) {
+            loggedInUserId = savedInstanceState.getInt(SAVED_INSTANCE_STATE_USERID_KEY, LOGGED_OUT);
+        }
+
+        if (loggedInUserId == LOGGED_OUT) {
+            loggedInUserId = getIntent().getIntExtra(MAIN_ACTIVITY_USER_ID, LOGGED_OUT);
+        }
 
         if (loggedInUserId == LOGGED_OUT) {
             return;
-        } else {
-            LiveData<User> userObserver = repository.getUserByUserId(loggedInUserId);
-            userObserver.observe(this, user -> {
-                if (user != null) {
-                    invalidateOptionsMenu();
-                }
-            });
         }
 
+        LiveData<User> userObserver = repository.getUserByUserId(loggedInUserId);
+        userObserver.observe(this, user -> {
+            this.user = user;
+            if (this.user != null) {
+                invalidateOptionsMenu();
+            } else {
+                // TODO: Verify if this was an issue
+                // logout();
+            }
+        });
     }
 
     @Override
@@ -173,6 +185,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(LoginActivity.loginIntentFactory(getApplicationContext()));
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_INSTANCE_STATE_USERID_KEY, loggedInUserId);
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_USERID_KEY,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor sharedPrefEditor = sharedPreferences.edit();
+        sharedPrefEditor.putInt(MainActivity.SHARED_PREFERENCE_USERID_KEY, loggedInUserId);
+        sharedPrefEditor.apply();
+    }
+
     static Intent mainActivityIntentFactory(Context context, int userId) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(MAIN_ACTIVITY_USER_ID, userId);
@@ -180,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void insertGymLogRecord() {
+        if (mExercise.isEmpty()) {
+            return;
+        }
+
         GymLog log = new GymLog(mExercise, mWeight, mReps, loggedInUserId);
         repository.insertGymLog(log);
     }
@@ -188,13 +215,16 @@ public class MainActivity extends AppCompatActivity {
      * Using information gathered from the user, update the log at the top of the interface
      */
     private void updateDisplay() {
-        String currentInfo = binding.logDisplayTextView.getText().toString();
-        String newDisplay = String.format(Locale.US,
-                "Exercise:%s%nWeight:%.2f%nReps:%d%n=-=-=-=%n%s",
-                mExercise, mWeight, mReps, currentInfo);
+        ArrayList<GymLog> allLogs = repository.getAllLogsByUserId(loggedInUserId);
 
-        binding.logDisplayTextView.setText(newDisplay);
-        Log.i(TAG, repository.getAllLogs().toString());
+        if (allLogs.isEmpty()) {
+            binding.logDisplayTextView.setText("Nothing to show, time to hit the gym!");
+        }
+        StringBuilder sb = new StringBuilder();
+        for (GymLog log : allLogs) {
+            sb.append(log);
+        }
+        binding.logDisplayTextView.setText(sb.toString());
     }
 
     /**
