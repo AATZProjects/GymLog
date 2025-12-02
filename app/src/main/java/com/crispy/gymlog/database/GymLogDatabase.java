@@ -12,16 +12,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.crispy.gymlog.database.entities.GymLog;
 import com.crispy.gymlog.MainActivity;
+import com.crispy.gymlog.database.entities.User;
 import com.crispy.gymlog.database.typeConverters.LocalDateTypeConverter;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @TypeConverters(LocalDateTypeConverter.class)
-@Database(entities = {GymLog.class}, version = 1, exportSchema = false)
+@Database(entities = {GymLog.class, User.class}, version = 5, exportSchema = false)
 public abstract class GymLogDatabase extends RoomDatabase {
 
-    private static final String DATABASE_NAME = "GymLog_database";
+    public static final String USER_TABLE = "usertable";
+    private static final String DATABASE_NAME = "GymLogDatabase";
     public static final String gymLogTable = "gymLogTable";
 
     private static volatile GymLogDatabase INSTANCE;
@@ -52,9 +54,20 @@ public abstract class GymLogDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             Log.i(MainActivity.TAG, "DATABASE CREATED!");
-            // TODO: add databaseWriteExecutor.execute(() -> {...}
+            databaseWriteExecutor.execute(() -> {
+                UserDAO dao = INSTANCE.userDAO();
+                dao.deleteAll();
+                User admin = new User("admin1", "admin1");
+                admin.setAdmin(true);
+                dao.insert(admin);
+
+                User testUser1 = new User("testuser1", "testuser1");
+                dao.insert(testUser1);
+            });
         }
     };
 
     public abstract GymLogDAO gymLogDAO();
+
+    public abstract UserDAO userDAO();
 }
