@@ -10,13 +10,16 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.crispy.gymlog.database.GymLogRepository;
+import com.crispy.gymlog.database.entities.GymLog;
 import com.crispy.gymlog.databinding.ActivityMainBinding;
 
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
+    private GymLogRepository repository;
 
     public static final String TAG = "DAC_GYMLOG";
 
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // ^^^ Boilerplate ^^^
 
+        repository = new GymLogRepository(getApplication());
+
         // Allows user to scroll the log on top
         binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
 
@@ -40,11 +45,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getInformationFromDisplay();
+                insertGymLogRecord();
                 updateDisplay();
 
             }
         });
 
+    }
+
+    private void insertGymLogRecord() {
+        GymLog log = new GymLog(mExercise, mWeight, mReps);
+        repository.insertGymLog(log);
     }
 
     /**

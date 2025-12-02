@@ -1,12 +1,11 @@
-package com.crispy.gymlog.Database.entities;
+package com.crispy.gymlog.database.entities;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.crispy.gymlog.Database.GymLogDatabase;
+import com.crispy.gymlog.database.GymLogDatabase;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity(tableName = GymLogDatabase.gymLogTable)
@@ -16,13 +15,13 @@ public class GymLog {
     private String exercise;
     private double weight;
     private int reps;
-    private LocalDate date;
+    private LocalDateTime date;
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -75,6 +74,6 @@ public class GymLog {
         this.weight = weight;
         this.reps = reps;
 
-        date = LocalDate.now();
+        date = LocalDateTime.now();
     }
 }
