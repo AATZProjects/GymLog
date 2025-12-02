@@ -8,12 +8,37 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/LogDisplayTextView"
+        android:layout_width="390dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dip"
+        android:padding="8dip"
         android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/exerciseLabelTextView"
+        android:layout_width="130dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="16dip"
+        android:layout_marginTop="8dip"
+        android:text="@string/exercise"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/LogDisplayTextView" />
+
+    <EditText
+        android:id="@+id/exerciseInputEditText"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:inputType="textAutoComplete"
+        android:padding="8dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/exerciseLabelTextView"
+        app:layout_constraintStart_toEndOf="@id/exerciseLabelTextView"
+        android:hint="@string/enter_an_exercise"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
