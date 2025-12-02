@@ -81,13 +81,11 @@ public class GymLog {
 
     @Override
     public String toString() {
-        return "GymLog{" +
-                "date=" + date +
-                ", id=" + id +
-                ", exercise='" + exercise + '\'' +
-                ", weight=" + weight +
-                ", reps=" + reps +
-                '}';
+        return exercise +
+                "%nweight: " + weight +
+                "%nreps: " + reps +
+                "%ndate: " + date +
+                "%n=-=-=-=-=-=-=";
     }
 
     public int getUserId() {
