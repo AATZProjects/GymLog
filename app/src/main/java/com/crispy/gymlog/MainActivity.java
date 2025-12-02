@@ -1,5 +1,6 @@
 package com.crispy.gymlog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -38,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // ^^^ Boilerplate ^^^
 
+        loginUser();
+
+        if (loggedInUserId == -1) {
+            Intent intent = LoginActivity.loginIntentFactory(getApplicationContext());
+            startActivity(intent);
+        }
+
         repository = GymLogRepository.getRepository(getApplication());
 
         // Allows user to scroll the log on top
@@ -62,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void loginUser() {
+        // TODO: Create login method
     }
 
     private void insertGymLogRecord() {
