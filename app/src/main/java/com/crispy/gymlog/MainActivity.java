@@ -18,12 +18,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.crispy.gymlog.database.GymLogRepository;
 import com.crispy.gymlog.database.entities.GymLog;
 import com.crispy.gymlog.database.entities.User;
 import com.crispy.gymlog.databinding.ActivityMainBinding;
+import com.crispy.gymlog.viewHolders.GymLogAdapter;
+import com.crispy.gymlog.viewHolders.GymLogViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String SAVED_INSTANCE_STATE_USERID_KEY = "com.crispy.gymlog.SAVED_INSTANCE_STATE_USERID_KEY";
     private ActivityMainBinding binding;
     private GymLogRepository repository;
+
+    private GymLogViewModel gymLogViewModel;
 
     public static final String TAG = "DAC_GYMLOG";
 
@@ -57,8 +64,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // ^^^ Boilerplate ^^^
 
+        gymLogViewModel = new ViewModelProvider(this).get(GymLogViewModel.class);
+
+
+        RecyclerView recyclerView = binding.logDisplayRecyclerView;
+        final GymLogAdapter adapter = new GymLogAdapter(new GymLogAdapter.GymLogDiff());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         repository = GymLogRepository.getRepository(getApplication());
         loginUser(savedInstanceState);
+
+        gymLogViewModel.getAllLogsById(loggedInUserId).observe(this, gymLogs -> {
+            adapter.submitList(gymLogs);
+        });
 
         // User is not logged in at this point, go to login screen
         if (loggedInUserId == -1) {
@@ -70,8 +89,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Allows user to scroll the log on top
-        binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
-        updateDisplay();
+        // TODO: Remove two lines below
+        // binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
+        // updateDisplay();
+
 
         // Log the values that are input in the text fields
         binding.logButton.setOnClickListener(new View.OnClickListener() {
@@ -79,18 +100,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 getInformationFromDisplay();
                 insertGymLogRecord();
-                updateDisplay();
+                // TODO: Remove line below
+                // updateDisplay();
 
             }
         });
 
-
+/**     TODO: REMOVE THIS BLOCK
         binding.exerciseInputEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateDisplay();
+                // updateDisplay();
             }
         });
+ */
 
     }
 
@@ -213,17 +236,18 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Using information gathered from the user, update the log at the top of the interface
      */
+    @Deprecated
     private void updateDisplay() {
         ArrayList<GymLog> allLogs = repository.getAllLogsByUserId(loggedInUserId);
 
         if (allLogs.isEmpty()) {
-            binding.logDisplayTextView.setText("Nothing to show, time to hit the gym!");
+            // binding.logDisplayTextView.setText("Nothing to show, time to hit the gym!");
         }
         StringBuilder sb = new StringBuilder();
         for (GymLog log : allLogs) {
             sb.append(log);
         }
-        binding.logDisplayTextView.setText(sb.toString());
+        // binding.logDisplayTextView.setText(sb.toString());
     }
 
     /**
