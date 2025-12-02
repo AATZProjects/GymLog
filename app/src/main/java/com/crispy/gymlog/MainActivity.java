@@ -1,24 +1,80 @@
 package com.crispy.gymlog;
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.View;
 
-import androidx.activity.EdgeToEdge;
+
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+
+import com.crispy.gymlog.databinding.ActivityMainBinding;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    ActivityMainBinding binding;
+
+    private static final String TAG = "DAC_GYMLOG";
+
+    String mExercise = "";
+    double mWeight = 0.0;
+    int mReps = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // vvv Boilerplate vvv
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        // ^^^ Boilerplate ^^^
+
+        // Allows user to scroll the log on top
+        binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
+
+        // Log the values that are input in the text fields
+        binding.logButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getInformationFromDisplay();
+                updateDisplay();
+
+            }
         });
+
+    }
+
+    /**
+     * Using information gathered from the user, update the log at the top of the interface
+     */
+    private void updateDisplay() {
+        String currentInfo = binding.logDisplayTextView.getText().toString();
+        String newDisplay = String.format(Locale.US,
+                "Exercise:%s%nWeight:%.2f%nReps:%d%n=-=-=-=%n%s",
+                mExercise, mWeight, mReps, currentInfo);
+
+        binding.logDisplayTextView.setText(newDisplay);
+    }
+
+    /**
+     * Read in the values currently input and store them to local variables
+     */
+    private void getInformationFromDisplay() {
+        mExercise = binding.exerciseInputEditText.getText().toString();
+
+        try {
+            mWeight = Double.parseDouble(binding.weightInputEditText.getText().toString());
+        } catch (NumberFormatException e) {
+            Log.d(TAG, "Error reading value from weight edit text.");
+        }
+
+        try {
+            mReps = Integer.parseInt(binding.repInputEditText.getText().toString());
+        } catch (NumberFormatException e) {
+            Log.d(TAG, "Error reading value from reps edit text.");
+        }
     }
 }

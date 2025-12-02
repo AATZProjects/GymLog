@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/LogDisplayTextView"
+        android:id="@+id/logDisplayTextView"
         android:layout_width="390dp"
         android:layout_height="200dp"
         android:layout_marginTop="16dip"
@@ -27,7 +27,7 @@
         android:text="@string/exercise"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/LogDisplayTextView" />
+        app:layout_constraintTop_toBottomOf="@id/logDisplayTextView" />
 
     <EditText
         android:id="@+id/exerciseInputEditText"
@@ -49,8 +49,7 @@
         android:text="@string/weight"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/exerciseLabelTextView"
-        />
+        app:layout_constraintTop_toBottomOf="@id/exerciseLabelTextView" />
 
     <EditText
         android:id="@+id/weightInputEditText"
@@ -72,8 +71,7 @@
         android:text="@string/reps"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/weightLabelTextView"
-        />
+        app:layout_constraintTop_toBottomOf="@id/weightLabelTextView" />
 
     <EditText
         android:id="@+id/repInputEditText"
@@ -87,14 +85,14 @@
         app:layout_constraintStart_toEndOf="@id/repLabelTextView" />
 
     <Button
+        android:id="@+id/logButton"
         android:layout_width="390dp"
         android:layout_height="205dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/repInputEditText"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:text="@string/log"
         android:textSize="36sp"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repInputEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
