@@ -3,6 +3,8 @@ package com.crispy.gymlog.database;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.crispy.gymlog.database.entities.GymLog;
 import com.crispy.gymlog.MainActivity;
 import com.crispy.gymlog.database.entities.User;
@@ -76,7 +78,15 @@ public class GymLogRepository {
 
     public void insertUser(User... user) {
         GymLogDatabase.databaseWriteExecutor.execute(() -> {
-           userDAO.insert(user);
+            userDAO.insert(user);
         });
+    }
+
+    public LiveData<User> getUserByUserName(String username) {
+        return userDAO.getUserByUserName(username);
+    }
+
+    public LiveData<User> getUserByUserId(int userId) {
+        return userDAO.getUserByUserId(userId);
     }
 }
