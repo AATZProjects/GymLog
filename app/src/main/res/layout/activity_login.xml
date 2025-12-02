@@ -11,10 +11,12 @@
         android:id="@+id/titleLoginTextView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_margin="16dp"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"
+        android:paddingTop="70dp"
         android:text="@string/welcome"
-        android:textSize="42sp"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +24,7 @@
     <EditText
         android:id="@+id/userNameLoginEditText"
         android:layout_width="match_parent"
-        android:layout_height="75sp"
+        android:layout_height="85sp"
         android:layout_margin="16dp"
         android:autofillHints="Please enter your username"
         android:gravity="center"
