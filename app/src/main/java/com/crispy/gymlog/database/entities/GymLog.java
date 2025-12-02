@@ -76,4 +76,15 @@ public class GymLog {
 
         date = LocalDateTime.now();
     }
+
+    @Override
+    public String toString() {
+        return "GymLog{" +
+                "date=" + date +
+                ", id=" + id +
+                ", exercise='" + exercise + '\'' +
+                ", weight=" + weight +
+                ", reps=" + reps +
+                '}';
+    }
 }

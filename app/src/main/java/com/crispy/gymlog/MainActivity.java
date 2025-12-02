@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // ^^^ Boilerplate ^^^
 
-        repository = new GymLogRepository(getApplication());
+        repository = GymLogRepository.getRepository(getApplication());
 
         // Allows user to scroll the log on top
         binding.logDisplayTextView.setMovementMethod(new ScrollingMovementMethod());
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 mExercise, mWeight, mReps, currentInfo);
 
         binding.logDisplayTextView.setText(newDisplay);
+        Log.i(TAG, repository.getAllLogs().toString());
     }
 
     /**
